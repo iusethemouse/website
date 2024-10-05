@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>My Blog</title>
+</head>
+
+<body>
+    <header>
+        <h1>Welcome to My Blog</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="reading.html">Reading</a>
+            <a href="watching.html">Watching</a>
+        </nav>
+    </header>
+    <main>
+        <ul>
+            {% for post in posts %}
+            <li><a href="{{ post.title.replace(' ', '_').lower() }}.html">{{ post.title }} - {{ post.date }}</a></li>
+            {% endfor %}
+        </ul>
+    </main>
+</body>
+
+</html>
