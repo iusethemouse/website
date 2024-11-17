@@ -1,41 +1,49 @@
 {% extends "base.html" %}
 {% block title %}humanoid's reading{% endblock %}
 {% block content %}
-<section class="content-section">
-    <h2>reading</h2>
-
-    <section class="reading-now">
-        <h3>reading now</h3>
-        <ul class="book-list current-list">
+<section class="content-container bordered-thick">
+    <section class="content-section">
+        <h2>reading now</h2>
+        <ul class="item-list">
             {% for book in current_books %}
-            <li>
-                <h4>{{ book.title }}</h4>
-                <p>by {{ book.author }}</p>
+            <li class="bordered-light">
+                <div class="book-header">
+                    <h3>{{ book.title }}</h3>
+                    <p>by <i>{{ book.author }}</i></p>
+                </div>
                 {{ book.content | safe }}
             </li>
             {% endfor %}
         </ul>
     </section>
 
-    <section class="reading-list">
-        <h3>reading list</h3>
+    <section class="content-section">
+        <h2>reading list</h2>
         <details>
             <summary>to read</summary>
-            <ul class="book-list future-list">
+            <ul class="item-list">
                 {% for book in later_books %}
-                <li>{{ book.title }} by {{ book.author }}</li>
+                <li class="bordered-light">
+                    <div class="book-header">
+                        <h3>{{ book.title }}</h3>
+                        <p>by <i>{{ book.author }}</i></p>
+                    </div>
+                    {{ book.content | safe }}
+                </li>
                 {% endfor %}
             </ul>
         </details>
     </section>
 
-    <section class="read">
-        <h3>read</h3>
-        <ul class="book-list completed-list">
+    <section class="content-section">
+        <h2>read</h2>
+        <ul class="item-list">
             {% for book in completed_books %}
-            <li>
-                <h4>{{ book.title }}</h4>
-                <p>by {{ book.author }}</p>
+            <li class="bordered-light">
+                <div class="book-header">
+                    <h3>{{ book.title }}</h3>
+                    <p>by <i>{{ book.author }}</i></p>
+                </div>
                 {{ book.content | safe }}
             </li>
             {% endfor %}

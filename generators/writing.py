@@ -1,4 +1,3 @@
-import os
 import yaml
 import markdown
 from pathlib import Path

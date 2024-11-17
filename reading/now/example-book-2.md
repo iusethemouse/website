@@ -1,5 +1,5 @@
 ---
-title: "Example book 1"
+title: "Example book 2"
 author: "Dave Thomas, Andy Hunt"
 date: "2024-11-16"
 ---

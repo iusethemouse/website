@@ -1,115 +1,43 @@
-/* Base layout */
-html,
-body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+/* SHARED BORDERNESS */
+.bordered-thick {
+    border: 2px dashed #333;
+    padding: 1.5rem;
 }
 
+.bordered-light {
+    border: 1px dashed #666;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* ========================== */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.6;
     color: #333;
     background: #fff;
-    overflow-y: auto;
+    margin: 0;
 }
 
-.page-container {
+.wrapper {
     min-height: 100vh;
     max-width: 800px;
-    margin: 0 auto;
     padding: 2rem;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    padding-bottom: 4rem;
+    margin: 0 auto;
 }
 
-/* Main content */
 .site-main {
-    flex-grow: 1;
+    flex: 1;
     margin: 2rem 0;
-}
-
-/* Header */
-.site-header {
-    border: 2px dashed #333;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    margin-top: 1rem;
-    /* Add some space above the header */
-}
-
-.site-header h1 {
-    font-size: 2em;
-    /* Back to original size */
-    margin: 0.5em 0 0.8em;
-    /* Add space above title within header */
-}
-
-.site-footer {
-    position: fixed;
-    bottom: 1rem;
-    left: 1rem;
-    padding: 0;
-    margin: 0;
-    border: none;
-    text-align: left;
 }
 
 .site-footer p {
     margin: 0;
     font-size: 0.8em;
     color: #666;
-}
-
-/* Content sections */
-.content-section {
-    border: 2px dashed #333;
-    padding: 1.5rem;
-}
-
-.content-section>h2:first-child {
-    font-size: 1.75em;
-    /* Slightly smaller than site title */
-    margin-top: 0;
-    margin-bottom: 1em;
-}
-
-/* Section titles */
-.content-section h3 {
-    font-size: 1.25em;
-    /* Proportionally smaller */
-    margin: 1.4em 0 0.8em;
-}
-
-/* Typography */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    margin: 1.4em 0 0.8em;
-    line-height: 1.2;
-}
-
-h1 {
-    font-size: 2em;
-    margin-top: 0;
-}
-
-h2 {
-    font-size: 1.5em;
-}
-
-h3 {
-    font-size: 1.17em;
-}
-
-/* Navigation */
-nav {
-    margin: 1rem 0 0 0;
 }
 
 nav a {
@@ -123,21 +51,84 @@ nav a:hover {
     border-bottom-style: dashed;
 }
 
-/* Content styles */
-.book-list,
-.post-list {
+.content-section {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #ccc;
+}
+
+.item-list {
     list-style: none;
     padding: 0;
 }
 
-.book-list li,
-.post-list li {
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px dashed #ccc;
+/* READING PAGE */
+.book-header {
+    border-bottom: 1px solid #ccc;
 }
 
-/* Details/Summary for reading list */
+.book-header h3 {
+    margin-bottom: 0.2rem;
+}
+
+.book-header p {
+    font-size: small;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+
+
+
+
+
+
+
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    line-height: 1.2;
+    margin-top: 0;
+}
+
+p {
+    margin-bottom: 1.5rem;
+}
+
+/* Code blocks */
+pre,
+code {
+    font-family: "SF Mono", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 14px;
+    background: #f4f4f4;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+}
+
+pre {
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+/* Quotes */
+blockquote {
+    margin: 0;
+    padding-left: 1rem;
+    border-left: 2px solid #888;
+}
+
+/* Lists */
+.post-list,
+.media-list {
+    list-style: none;
+    padding: 0;
+}
+
+/* Details/Summary components */
 details {
     margin-bottom: 2rem;
 }
@@ -153,40 +144,11 @@ summary:hover {
     background: #eee;
 }
 
-/* Typography refinements */
-p {
-    margin-bottom: 1.5rem;
-    font-size: 16px;
-}
-
-pre,
-code {
-    font-family: "SF Mono", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-    font-size: 14px;
-    background: #f4f4f4;
-    padding: 0.2em 0.4em;
-    border-radius: 3px;
-}
-
-pre {
-    padding: 1rem;
-    overflow-x: auto;
-}
-
-blockquote {
-    margin: 0;
-    padding-left: 1rem;
-    border-left: 2px dashed #333;
-}
-
-/* Post-specific styles */
-.post-list {
-    list-style: none;
-    padding: 0;
-}
-
+/* Posts */
 .post-list li {
+    border-bottom: 1px dashed #ccc;
     margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
 }
 
 .post-list time {
@@ -195,7 +157,7 @@ blockquote {
 }
 
 .post-list h3 {
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.5rem;
 }
 
 .post-list a {
@@ -206,6 +168,12 @@ blockquote {
 
 .post-list a:hover {
     border-bottom-style: dashed;
+}
+
+/* Articles */
+article {
+    border: 2px dashed #333;
+    padding: 1.5rem;
 }
 
 article header {
@@ -236,13 +204,15 @@ article footer a:hover {
     border-bottom-style: dashed;
 }
 
-/* Media list styles */
+/* Media sections */
 .media-lists {
     margin: 2rem 0;
 }
 
 .media-lists section {
-    margin-bottom: 2rem;
+    border: 2px dashed #333;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .media-lists h3 {
@@ -251,23 +221,20 @@ article footer a:hover {
     border-bottom: 1px dashed #ccc;
 }
 
-.media-list {
-    list-style: none;
-    padding: 0;
-}
-
 .media-list li {
+    border-bottom: 1px dashed #ccc;
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px dashed #eee;
 }
 
 .media-list li:last-child {
     border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 .media-list h4 {
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.5rem;
 }
 
 .media-list p {
@@ -286,20 +253,4 @@ article footer a:hover {
 .progress {
     color: #333 !important;
     font-weight: 500;
-}
-
-/* Watching-specific details/summary styles */
-.watching-section details {
-    margin-bottom: 2rem;
-}
-
-.watching-section summary {
-    cursor: pointer;
-    padding: 1rem;
-    background: #f4f4f4;
-    border: 1px dashed #333;
-}
-
-.watching-section summary:hover {
-    background: #eee;
 }

@@ -1,5 +1,5 @@
 ---
-title: "Exmaple book"
+title: "Example book"
 author: "Dave Thomas, Andy Hunt"
 date: "2024-11-16"
 ---
@@ -12,3 +12,5 @@ And this is a sneaky pre
         Hel...
             He...
 ```
+
+Anyway, let us read in peace now.

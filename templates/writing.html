@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %}humanoid's writing{% endblock %}
 {% block content %}
-<section class="content-section">
-    <h2>writing</h2>
+<section class="content-container bordered-thick">
+    <h1>writing</h1>
     <ul class="post-list">
         {% for post in posts %}
-        <li>
+        <li class="bordered-light">
             <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
             <time datetime="{{ post.date }}">{{ post.date }}</time>
         </li>
