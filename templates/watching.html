@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}humanoid's watching{% endblock %}
+{% block content %}
+<section class="content-section">
+    <h2>watching</h2>
+
+    <details>
+        <summary>to watch</summary>
+        <div class="media-lists">
+            <section class="movies">
+                <h3>movies</h3>
+                <ul class="media-list future-list">
+                    {% for movie in future_movies %}
+                    <li>
+                        <h4>{{ movie.title }}</h4>
+                        <p>{{ movie.year }} • {{ movie.director }}</p>
+                        {{ movie.content | safe }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <section class="shows">
+                <h3>shows</h3>
+                <ul class="media-list future-list">
+                    {% for show in future_shows %}
+                    <li>
+                        <h4>{{ show.title }}</h4>
+                        <p>{{ show.year }} • {{ show.creator }}</p>
+                        {{ show.content | safe }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </div>
+    </details>
+
+    <section class="watching-now">
+        <h2>watching now</h2>
+        <div class="media-lists">
+            <section class="movies">
+                <h3>movies</h3>
+                <ul class="media-list current-list">
+                    {% for movie in current_movies %}
+                    <li>
+                        <h4>{{ movie.title }}</h4>
+                        <p>{{ movie.year }} • {{ movie.director }}</p>
+                        {{ movie.content | safe }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <section class="shows">
+                <h3>shows</h3>
+                <ul class="media-list current-list">
+                    {% for show in current_shows %}
+                    <li>
+                        <h4>{{ show.title }}</h4>
+                        <p>{{ show.year }} • {{ show.creator }}</p>
+                        <p class="progress">Season {{ show.current_season }}, Episode {{ show.current_episode }}</p>
+                        {{ show.content | safe }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </div>
+    </section>
+
+    <section class="watched">
+        <h2>watched</h2>
+        <div class="media-lists">
+            <section class="movies">
+                <h3>movies</h3>
+                <ul class="media-list completed-list">
+                    {% for movie in watched_movies %}
+                    <li>
+                        <h4>{{ movie.title }}</h4>
+                        <p>{{ movie.year }} • {{ movie.director }}</p>
+                        <time datetime="{{ movie.date_watched }}">watched: {{ movie.date_watched }}</time>
+                        {{ movie.content | safe }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <section class="shows">
+                <h3>shows</h3>
+                <ul class="media-list completed-list">
+                    {% for show in watched_shows %}
+                    <li>
+                        <h4>{{ show.title }}</h4>
+                        <p>{{ show.year }} • {{ show.creator }}</p>
+                        <time datetime="{{ show.date_finished }}">finished: {{ show.date_finished }}</time>
+                        {{ show.content | safe }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </div>
+    </section>
+</section>
+{% endblock %}

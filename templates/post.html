@@ -1,24 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}{{ title }} - humanoid's internet page{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>{{ title }}</title>
-</head>
-
-<body>
+{% block content %}
+<article class="content-section">
     <header>
-        <a href="index.html">Back to Home</a>
-    </header>
-    <article>
         <h1>{{ title }}</h1>
-        <p><em>{{ date }}</em></p>
-        <div>
-            {{ content | safe }}
-        </div>
-    </article>
-</body>
+        <time datetime="{{ date }}">{{ date }}</time>
+    </header>
 
-</html>
+    <div class="post-content">
+        {{ content | safe }}
+    </div>
+
+    <footer>
+        <a href="writing.html">← back to writing</a>
+    </footer>
+</article>
+{% endblock %}

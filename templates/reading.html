@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}humanoid's reading{% endblock %}
+{% block content %}
+<section class="content-section">
+    <h2>reading</h2>
+
+    <section class="reading-now">
+        <h3>reading now</h3>
+        <ul class="book-list current-list">
+            {% for book in current_books %}
+            <li>
+                <h4>{{ book.title }}</h4>
+                <p>by {{ book.author }}</p>
+                {{ book.content | safe }}
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="reading-list">
+        <h3>reading list</h3>
+        <details>
+            <summary>to read</summary>
+            <ul class="book-list future-list">
+                {% for book in later_books %}
+                <li>{{ book.title }} by {{ book.author }}</li>
+                {% endfor %}
+            </ul>
+        </details>
+    </section>
+
+    <section class="read">
+        <h3>read</h3>
+        <ul class="book-list completed-list">
+            {% for book in completed_books %}
+            <li>
+                <h4>{{ book.title }}</h4>
+                <p>by {{ book.author }}</p>
+                {{ book.content | safe }}
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+</section>
+{% endblock %}

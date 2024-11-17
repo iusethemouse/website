@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>{% block title %}humanoid's internet page{% endblock %}</title>
+    <title>First post - humanoid's internet page</title>
 </head>
 
 <body>
@@ -21,7 +21,33 @@
         </header>
 
         <main class="site-main">
-            {% block content %}{% endblock %}
+            
+<article class="content-section">
+    <header>
+        <h1>First post</h1>
+        <time datetime="2024-10-05">2024-10-05</time>
+    </header>
+
+    <div class="post-content">
+        <h1>Heading 1</h1>
+<p>Hello there.</p>
+<h2>Heading 2</h2>
+<blockquote>
+<p>This is a quote.</p>
+</blockquote>
+<p>Here is a bit of inline code: <code>def main():</code></p>
+<p>And here is a pre block:</p>
+<pre><code>def main():
+    print(&quot;Hello there.&quot;)
+</code></pre>
+<p>Bye!</p>
+    </div>
+
+    <footer>
+        <a href="writing.html">← back to writing</a>
+    </footer>
+</article>
+
         </main>
 
         <footer class="site-footer">
