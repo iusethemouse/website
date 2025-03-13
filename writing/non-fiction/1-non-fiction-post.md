@@ -1,5 +1,5 @@
 ---
-title: "First post"
+title: "Non-fiction post 1"
 date: "2024-10-05"
 ---
 

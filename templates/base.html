@@ -2,22 +2,26 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
     <title>{% block title %}humanoid's internet page{% endblock %}</title>
 </head>
 
 <body>
     <div class="wrapper">
-        <header class="site-header bordered-thick">
-            <h1>humanoid's internet page</h1>
-            <nav>
-                <a href="index.html">home</a>
-                <a href="writing.html">writing</a>
-                <a href="reading.html">reading</a>
-                <a href="watching.html">watching</a>
-            </nav>
+        <header class="site-header">
+            <div class="header-content">
+                <img src="icon.png" alt="Site icon" class="site-icon" />
+                <div class="title-and-nav">
+                    <h1>humanoid's internet page</h1>
+                    <nav>
+                        <a href="index.html">home</a>
+                        <a href="writing.html">writing</a>
+                        <a href="about.html">about</a>
+                    </nav>
+                </div>
+            </div>
         </header>
 
         <main class="site-main">
@@ -25,7 +29,7 @@
         </main>
 
         <footer class="site-footer">
-            <p>© 2024 Ivan Prigarin</p>
+            <p>© 2025 Ivan Prigarin</p>
         </footer>
     </div>
 </body>

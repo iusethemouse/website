@@ -1,15 +1,39 @@
 {% extends "base.html" %}
 {% block title %}humanoid's writing{% endblock %}
+
 {% block content %}
-<section class="content-container bordered-thick">
-    <h1>writing</h1>
-    <ul class="post-list">
-        {% for post in posts %}
-        <li class="bordered-light">
-            <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
-            <time datetime="{{ post.date }}">{{ post.date }}</time>
+<section class="content-container">
+    <hr>
+
+    <h2>technical</h2>
+    <ul>
+        {% for post in technical_posts %}
+        <li>
+            <a href="{{ post.url }}">{{ post.title }}</a>
+            {% if post.date %} <small>({{ post.date }})</small> {% endif %}
         </li>
         {% endfor %}
     </ul>
+
+    <h2>fiction</h2>
+    <ul>
+        {% for post in fiction_posts %}
+        <li>
+            <a href="{{ post.url }}">{{ post.title }}</a>
+            {% if post.date %} <small>({{ post.date }})</small> {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h2>non-fiction</h2>
+    <ul>
+        {% for post in nonfiction_posts %}
+        <li>
+            <a href="{{ post.url }}">{{ post.title }}</a>
+            {% if post.date %} <small>({{ post.date }})</small> {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+
 </section>
 {% endblock %}

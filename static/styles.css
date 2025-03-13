@@ -1,256 +1,89 @@
-/* SHARED BORDERNESS */
-.bordered-thick {
-    border: 2px dashed #333;
-    padding: 1.5rem;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
-.bordered-light {
-    border: 1px dashed #666;
-    padding: 1rem;
-    margin-bottom: 1rem;
-}
-
-/* ========================== */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    background: #fff;
     margin: 0;
+    padding: 0;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    color: #333;
+    line-height: 1.6;
+    background: #fff;
 }
 
 .wrapper {
-    min-height: 100vh;
-    max-width: 800px;
+    max-width: 700px;
+    margin: 0 auto;
     padding: 2rem;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    box-sizing: border-box;
-    margin: 0 auto;
+}
+
+.site-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.header-content {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 1rem;
+    text-align: left;
+}
+
+.site-icon {
+    width: 40px;
+    height: auto;
+}
+
+.title-and-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.title-and-nav h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: normal;
+}
+
+.title-and-nav nav {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 1.5rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid transparent;
+}
+
+nav a:hover {
+    border-bottom: 1px solid #333;
 }
 
 .site-main {
     flex: 1;
-    margin: 2rem 0;
+}
+
+.site-footer {
+    text-align: center;
+    margin-top: 2rem;
 }
 
 .site-footer p {
     margin: 0;
-    font-size: 0.8em;
+    font-size: 0.8rem;
     color: #666;
 }
 
-nav a {
-    margin-right: 1.5rem;
-    color: #333;
-    text-decoration: none;
-    border-bottom: 1px solid #333;
-}
-
-nav a:hover {
-    border-bottom-style: dashed;
-}
-
-.content-section {
-    margin-bottom: 2rem;
-    border-bottom: 1px solid #ccc;
-}
-
-.item-list {
-    list-style: none;
-    padding: 0;
-}
-
-/* READING PAGE */
-.book-header {
-    border-bottom: 1px solid #ccc;
-}
-
-.book-header h3 {
-    margin-bottom: 0.2rem;
-}
-
-.book-header p {
-    font-size: small;
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-}
-
-
-
-
-
-
-
-
-
-/* Typography */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    line-height: 1.2;
-    margin-top: 0;
-}
-
-p {
-    margin-bottom: 1.5rem;
-}
-
-/* Code blocks */
-pre,
-code {
-    font-family: "SF Mono", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-    font-size: 14px;
-    background: #f4f4f4;
-    padding: 0.2em 0.4em;
-    border-radius: 3px;
-}
-
-pre {
-    padding: 1rem;
-    overflow-x: auto;
-}
-
-/* Quotes */
-blockquote {
-    margin: 0;
-    padding-left: 1rem;
-    border-left: 2px solid #888;
-}
-
-/* Lists */
-.post-list,
-.media-list {
-    list-style: none;
-    padding: 0;
-}
-
-/* Details/Summary components */
-details {
-    margin-bottom: 2rem;
-}
-
-summary {
-    cursor: pointer;
-    padding: 1rem;
-    background: #f4f4f4;
-    border: 1px dashed #333;
-}
-
-summary:hover {
-    background: #eee;
-}
-
-/* Posts */
-.post-list li {
-    border-bottom: 1px dashed #ccc;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
-}
-
-.post-list time {
-    color: #666;
-    font-size: 0.9em;
-}
-
-.post-list h3 {
-    margin: 0 0 0.5rem;
-}
-
-.post-list a {
-    color: inherit;
-    text-decoration: none;
-    border-bottom: 1px solid #333;
-}
-
-.post-list a:hover {
-    border-bottom-style: dashed;
-}
-
-/* Articles */
-article {
-    border: 2px dashed #333;
-    padding: 1.5rem;
-}
-
-article header {
-    margin-bottom: 2rem;
-}
-
-article time {
-    color: #666;
-}
-
-.post-content {
-    margin: 2rem 0;
-}
-
-article footer {
-    margin-top: 3rem;
-    padding-top: 1rem;
-    border-top: 1px dashed #ccc;
-}
-
-article footer a {
-    color: inherit;
-    text-decoration: none;
-    border-bottom: 1px solid #333;
-}
-
-article footer a:hover {
-    border-bottom-style: dashed;
-}
-
-/* Media sections */
-.media-lists {
-    margin: 2rem 0;
-}
-
-.media-lists section {
-    border: 2px dashed #333;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.media-lists h3 {
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px dashed #ccc;
-}
-
-.media-list li {
-    border-bottom: 1px dashed #ccc;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
-}
-
-.media-list li:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.media-list h4 {
-    margin: 0 0 0.5rem;
-}
-
-.media-list p {
-    margin: 0.5rem 0;
-    color: #666;
-    font-size: 0.9em;
-}
-
-.media-list time {
+.centered-image {
     display: block;
-    color: #666;
-    font-size: 0.9em;
-    margin-bottom: 0.5rem;
-}
-
-.progress {
-    color: #333 !important;
-    font-weight: 500;
+    margin: 0 auto;
 }

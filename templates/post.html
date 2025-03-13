@@ -5,7 +5,9 @@
 <article class="content-section">
     <header>
         <h1>{{ title }}</h1>
+        {% if date %}
         <time datetime="{{ date }}">{{ date }}</time>
+        {% endif %}
     </header>
 
     <div class="post-content">
