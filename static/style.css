@@ -1,0 +1,390 @@
+/* ---------------------------------------------------------------------------
+   humanoid-factoid.com
+   --------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: monospace;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #000;
+    background: #fff;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ---------------------------------------------------------------------------
+   Header
+   --------------------------------------------------------------------------- */
+
+header {
+    border-bottom: 3px solid #000;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+header h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+}
+
+nav {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+nav a {
+    color: #000;
+    text-decoration: none;
+}
+
+nav a:hover,
+nav a.active {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Main
+   --------------------------------------------------------------------------- */
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+main h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-transform: lowercase;
+}
+
+main h3 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+main p {
+    margin-bottom: 1rem;
+}
+
+main a {
+    color: #000;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+main a:hover {
+    text-decoration-thickness: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Lists (writing index, collections index)
+   --------------------------------------------------------------------------- */
+
+.category-list,
+.post-list {
+    list-style: none;
+}
+
+.category-list li,
+.post-list li {
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.post-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.post-list li span {
+    font-size: 0.8rem;
+    color: #666;
+    white-space: nowrap;
+    margin-left: 1rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Articles (writing posts)
+   --------------------------------------------------------------------------- */
+
+article {
+    max-width: 65ch;
+}
+
+.post-date {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Rich content (articles + collection blurbs)
+   --------------------------------------------------------------------------- */
+
+article ul,
+article ol,
+.item-blurb ul,
+.item-blurb ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    list-style-position: inside;
+}
+
+article li,
+.item-blurb li {
+    margin-bottom: 0.25rem;
+}
+
+article blockquote,
+.item-blurb blockquote {
+    border-left: 3px solid #000;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+}
+
+article code,
+.item-blurb code {
+    font-size: 0.9em;
+    background: rgba(0, 0, 0, 0.06);
+    padding: 0.1em 0.3em;
+}
+
+article pre,
+.item-blurb pre {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.06);
+    overflow-x: auto;
+    border: 1px solid #ddd;
+}
+
+article pre code,
+.item-blurb pre code {
+    background: none;
+    padding: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Collection items
+   --------------------------------------------------------------------------- */
+
+.collection-item {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.collection-item:last-child {
+    border-bottom: none;
+}
+
+.item-cover {
+    flex: 0 0 33.333%;
+    position: sticky;
+    top: 2rem;
+    align-self: flex-start;
+}
+
+.item-cover img {
+    width: 100%;
+    display: block;
+    border: 2px solid #000;
+}
+
+.item-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.item-subtitle {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.item-blurb p {
+    margin-bottom: 0.75rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Footer
+   --------------------------------------------------------------------------- */
+
+footer {
+    border-top: 3px solid #000;
+    margin-top: auto;
+    padding-top: 2rem;
+    font-size: 0.8rem;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ---------------------------------------------------------------------------
+   Theme switcher
+   --------------------------------------------------------------------------- */
+
+.theme-switcher {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.theme-btn {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    border: 2px solid #000;
+    cursor: pointer;
+    padding: 0;
+}
+
+.theme-btn[data-theme=""] {
+    background: #fff;
+}
+
+.theme-btn[data-theme="theme-beige"] {
+    background: #f5f0e8;
+}
+
+.theme-btn[data-theme="theme-dark"] {
+    background: #2a2a2a;
+}
+
+/* ---------------------------------------------------------------------------
+   Hero drawing (home + about)
+   --------------------------------------------------------------------------- */
+
+.hero-drawing {
+    margin-top: auto;
+    text-align: center;
+    line-height: 0;
+}
+
+.hero-drawing img {
+    max-width: 60%;
+    height: auto;
+    margin-bottom: -3px;
+}
+
+.hero-night {
+    display: none;
+}
+
+body.theme-dark .hero-day {
+    display: none;
+}
+
+body.theme-dark .hero-night {
+    display: inline;
+}
+
+/* ---------------------------------------------------------------------------
+   Figures (images in posts)
+   --------------------------------------------------------------------------- */
+
+figure {
+    margin: 1.5rem 0;
+}
+
+figure img {
+    max-width: 100%;
+    display: block;
+    border: 2px solid #000;
+}
+
+figcaption {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.4rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Themes
+   --------------------------------------------------------------------------- */
+
+body.theme-beige {
+    background: #f5f0e8;
+}
+
+body.theme-dark {
+    background: #2a2a2a;
+    color: #d0d0d0;
+}
+
+body.theme-dark header {
+    border-bottom-color: #d0d0d0;
+}
+
+body.theme-dark nav a,
+body.theme-dark main a {
+    color: #d0d0d0;
+}
+
+body.theme-dark footer {
+    border-top-color: #d0d0d0;
+}
+
+body.theme-dark .theme-btn {
+    border-color: #d0d0d0;
+}
+
+body.theme-dark .item-cover img,
+body.theme-dark figure img {
+    border-color: #d0d0d0;
+}
+
+body.theme-dark blockquote {
+    border-left-color: #d0d0d0;
+}
+
+body.theme-dark code,
+body.theme-dark pre {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body.theme-dark pre {
+    border-color: #555;
+}
+
+/* ---------------------------------------------------------------------------
+   Mobile
+   --------------------------------------------------------------------------- */
+
+@media (max-width: 600px) {
+    body {
+        padding: 1rem;
+    }
+
+    .collection-item {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .item-cover {
+        position: static;
+        flex: none;
+        width: 100%;
+    }
+}
