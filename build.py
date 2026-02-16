@@ -5,9 +5,9 @@ Converts Markdown content into a fully static website.
 Single dependency: `markdown` (pip install markdown)
 """
 
-import os
 import re
 import shutil
+from html import escape
 import markdown
 from pathlib import Path
 
@@ -52,6 +52,22 @@ def render_md(text):
     return md.convert(text)
 
 
+CALLOUT_RE = re.compile(r"\[!(NOTE|WARNING|TIP)\]\n?", re.IGNORECASE)
+
+
+def process_callouts(html):
+    """Convert GitHub-style > [!NOTE] blockquotes into styled callouts."""
+    def replace_callout(match):
+        kind = match.group(1).lower()
+        return f'</p></blockquote><blockquote class="callout callout-{kind}"><p><strong>{kind}</strong><br>'
+    html = CALLOUT_RE.sub(replace_callout, html)
+    # Clean up empty <p></p> and <blockquote></blockquote> left behind
+    html = html.replace("<p></p>", "")
+    html = html.replace("<blockquote>\n</blockquote>", "")
+    html = html.replace("<blockquote></blockquote>", "")
+    return html
+
+
 def process_images(html, depth):
     """Rewrite /images/ paths to relative and wrap <img> in <figure>."""
     prefix = "../" * depth if depth else "./"
@@ -87,7 +103,9 @@ def base_page(title, body_html, active="", depth=0, description=""):
         nav_links.append(f'<a href="{href}"{cls}>{label}</a>')
     nav_html = " / ".join(nav_links)
     desc_tag = (
-        f'\n<meta name="description" content="{description}">' if description else ""
+        f'\n<meta name="description" content="{escape(description, quote=True)}">'
+        if description
+        else ""
     )
 
     return f"""<!DOCTYPE html>
@@ -107,7 +125,7 @@ def base_page(title, body_html, active="", depth=0, description=""):
 {body_html}
 </main>
 <footer>
-<span>2026 &copy; Denver Jackson</span>
+<span>2026 &copy; Ivan Prigarin</span>
 <span class="theme-switcher">
 <button class="theme-btn" data-theme="" title="white"></button>
 <button class="theme-btn" data-theme="theme-beige" title="beige"></button>
@@ -224,7 +242,7 @@ def build_writing_category(category):
         title = meta.get("title", slug)
         date = meta.get("date", "")
         desc = meta.get("description", "")
-        content = process_images(render_md(md_body), depth=3)
+        content = process_callouts(process_images(render_md(md_body), depth=3))
         post_html = f"<article><h2>{title}</h2>"
         if date:
             post_html += f'<p class="post-date">{date}</p>'
@@ -262,6 +280,49 @@ def build_collections():
         build_collection_category(cat)
 
 
+def build_subtitle(category, meta):
+    """Build a category-specific subtitle from frontmatter metadata."""
+    sep = " &middot; "
+    parts = []
+
+    if category == "books":
+        if meta.get("author"):
+            parts.append(meta["author"])
+        if meta.get("series"):
+            parts.append(meta["series"])
+        if meta.get("year"):
+            parts.append(meta["year"])
+
+    elif category == "films":
+        if meta.get("director"):
+            parts.append(meta["director"])
+        if meta.get("country"):
+            parts.append(meta["country"])
+        if meta.get("year"):
+            parts.append(meta["year"])
+
+    elif category == "tv":
+        if meta.get("creator"):
+            parts.append(meta["creator"])
+        year_start = meta.get("year_start", "")
+        year_end = meta.get("year_end", "&mdash;")
+        if year_start:
+            parts.append(f"{year_start}&ndash;{year_end}")
+        if meta.get("seasons"):
+            n = meta["seasons"]
+            parts.append(f"{n} season{'s' if n != '1' else ''}")
+
+    elif category == "games":
+        if meta.get("studio"):
+            parts.append(meta["studio"])
+        if meta.get("year"):
+            parts.append(meta["year"])
+        if meta.get("genre"):
+            parts.append(meta["genre"])
+
+    return sep.join(parts)
+
+
 def build_collection_category(category):
     cat_dir = CONTENT / "collections" / category
     items = []
@@ -287,13 +348,7 @@ def build_collection_category(category):
                 f"</div>"
             )
 
-        subtitle = ""
-        if author and year:
-            subtitle = f"{author} &mdash; {year}"
-        elif author:
-            subtitle = author
-        elif year:
-            subtitle = year
+        subtitle = build_subtitle(category, meta)
 
         subtitle_html = f'<p class="item-subtitle">{subtitle}</p>' if subtitle else ""
         entries.append(
@@ -366,18 +421,12 @@ def copy_static():
         shutil.copy2(css_src, OUTPUT / "style.css")
     # Cover images
     covers_src = STATIC / "covers"
-    covers_dest = OUTPUT / "covers"
     if covers_src.exists():
-        if covers_dest.exists():
-            shutil.rmtree(covers_dest)
-        shutil.copytree(covers_src, covers_dest)
+        shutil.copytree(covers_src, OUTPUT / "covers")
     # Content images
     images_src = STATIC / "images"
-    images_dest = OUTPUT / "images"
     if images_src.exists():
-        if images_dest.exists():
-            shutil.rmtree(images_dest)
-        shutil.copytree(images_src, images_dest)
+        shutil.copytree(images_src, OUTPUT / "images")
 
 
 # ---------------------------------------------------------------------------
