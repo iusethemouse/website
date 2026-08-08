@@ -5,9 +5,7 @@ description: A short story about a visit from an old friend.
 ---
 > [!NOTE]
 > This was my very first proper attempt at writing in English. Despite the occasional hiccup here and there, I still really love this story!
-> 
-# Don’t be afraid, human
-           
+
 Four fifty nine.  
 Four fifty nine.  
 Four fifty nine. A huge black fly sat on the digital wall-clock that my eyes are focused on. Probably the fattest one I have ever seen. I wonder what he is thinking about, maybe “I wonder what that guy at the table is thinking about?” or “Come on, clock, show me five o’clock and I will fly home to my lovely smelly wife and eat some rubbish, can’t wait to do that!”.

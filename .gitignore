@@ -27,3 +27,7 @@ Temporary Items
 
 # Misc
 **/__pycache__/
+output/
+.dev.vars*
+.env*
+.wrangler/
