@@ -5,6 +5,7 @@ Converts Markdown content and source images into a fully static website.
 Dependencies are pinned in requirements.txt.
 """
 
+import hashlib
 import io
 import json
 import re
@@ -262,7 +263,8 @@ def optimize_image(source, destination, *, max_edge, lossless=False):
         candidates.append((".webp", webp.getvalue()))
 
     suffix, data = min(candidates, key=lambda candidate: len(candidate[1]))
-    filename = f"{source.stem}{suffix}"
+    digest = hashlib.sha256(data).hexdigest()[:12]
+    filename = f"{source.stem}.{digest}{suffix}"
     destination.mkdir(parents=True, exist_ok=True)
     (destination / filename).write_bytes(data)
     return {"filename": filename, "width": image.width, "height": image.height}
@@ -283,6 +285,8 @@ def base_page(
     scripts=(),
 ):
     prefix = "../" * depth if depth else "./"
+    style_version = hashlib.sha256((STATIC / "style.css").read_bytes()).hexdigest()[:12]
+    theme_version = hashlib.sha256((STATIC / "theme.js").read_bytes()).hexdigest()[:12]
     nav_items = [
         ("home", f"{prefix}index.html"),
         ("writing", f"{prefix}writing/index.html"),
@@ -305,7 +309,8 @@ def base_page(
         else ""
     )
     extra_scripts = "".join(
-        f'\n<script src="{prefix}{escape(script, quote=True)}" defer></script>'
+        f'\n<script src="{prefix}{escape(script, quote=True)}?v='
+        f'{hashlib.sha256((STATIC / script).read_bytes()).hexdigest()[:12]}" defer></script>'
         for script in scripts
     )
     safe_title = escape(title)
@@ -316,8 +321,8 @@ def base_page(
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{safe_title} — humanoid's internet page</title>{desc_tag}{robots_tag}
-<link rel="stylesheet" href="{prefix}style.css">
-<script src="{prefix}theme.js"></script>{extra_scripts}
+<link rel="stylesheet" href="{prefix}style.css?v={style_version}">
+<script src="{prefix}theme.js?v={theme_version}" defer></script>{extra_scripts}
 </head>
 <body>
 <header>
@@ -641,9 +646,15 @@ def build_admin():
     )
     body = f"""
 <section class="admin-panel">
-<h1>add to collection</h1>
-<p>This creates a Markdown file and optional cover in one Git commit.</p>
-<form id="collection-form" action="./submit" method="post" enctype="multipart/form-data">
+<h1>add to site</h1>
+<p>This creates a Markdown file and any associated assets in one Git commit.</p>
+<form id="admin-form" action="./submit" method="post" enctype="multipart/form-data">
+<label>entry type
+<select id="entry-type" name="entry_type">
+<option value="collection">collection</option>
+<option value="writing">writing</option>
+</select>
+</label>
 <label>category
 <select id="category" name="category">{categories}</select>
 </label>
@@ -655,9 +666,10 @@ def build_admin():
 <input id="slug" name="slug" type="text" maxlength="120" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" required>
 <small>lowercase letters, numbers, and hyphens; used as the filename</small>
 </label>
-<label>date experienced
-<input name="date" type="text" maxlength="10" placeholder="YYYY or YYYY-MM" required>
+<label><span id="date-label">date experienced</span>
+<input id="entry-date" name="date" type="text" maxlength="10" placeholder="YYYY, YYYY-MM, or YYYY-MM-DD" required>
 </label>
+<div id="collection-fields">
 <label>cover image <span class="optional">optional</span>
 <input id="cover" name="cover" type="file" accept="image/jpeg,image/png,image/webp">
 <small>JPEG, PNG, or WebP; maximum 8 MB</small>
@@ -666,6 +678,16 @@ def build_admin():
 <label>your blurb <span class="optional">optional Markdown</span>
 <textarea name="blurb" rows="10" maxlength="20000"></textarea>
 </label>
+</div>
+<div id="writing-fields" hidden>
+<label>description <span class="optional">optional</span>
+<input name="description" type="text" maxlength="500" disabled>
+<small>A short summary for search results and link previews.</small>
+</label>
+<label>your piece <span class="optional">Markdown</span>
+<textarea name="body" rows="20" maxlength="200000" required disabled></textarea>
+</label>
+</div>
 <button class="submit-btn" type="submit">commit entry</button>
 </form>
 <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
@@ -676,7 +698,7 @@ def build_admin():
     write_page(
         dest / "index.html",
         base_page(
-            "add to collection",
+            "add to site",
             body,
             active="collections",
             depth=1,

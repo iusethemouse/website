@@ -6,9 +6,13 @@ var CATEGORY_FIELDS = {
     tv: ["creator", "year_start", "year_end", "seasons"],
     games: ["studio", "year", "genre"]
 };
+var WRITING_CATEGORIES = ["technical", "non-fiction", "fiction"];
 
 var FIELD_LIMITS = {
+    entry_type: 10,
+    category: 20,
     title: 200,
+    description: 500,
     author: 200,
     series: 200,
     director: 200,
@@ -174,6 +178,18 @@ function textField(form, name, required) {
     return value;
 }
 
+function markdownField(form, name, required, limit) {
+    var value = form.get(name);
+    if (typeof value !== "string") value = "";
+    value = value.replace(/\r\n?/g, "\n").trim();
+    if (required && !value) throw new RequestError(name + " is required.");
+    if (value.length > limit) throw new RequestError(name + " is too long.");
+    if (value.indexOf("\u0000") !== -1) {
+        throw new RequestError(name + " contains an invalid character.");
+    }
+    return value;
+}
+
 function validateDate(value) {
     var match = /^(19|20)\d{2}(?:-(0[1-9]|1[0-2])(?:-(0[1-9]|[12]\d|3[01]))?)?$/.exec(value);
     if (!match) throw new RequestError("date must be YYYY, YYYY-MM, or YYYY-MM-DD.");
@@ -261,7 +277,7 @@ async function githubRequest(settings, method, path, body) {
                 Accept: "application/vnd.github+json",
                 Authorization: "Bearer " + settings.token,
                 "Content-Type": "application/json",
-                "User-Agent": "humanoid-factoid-collection-form",
+                "User-Agent": "humanoid-factoid-admin-form",
                 "X-GitHub-Api-Version": "2022-11-28"
             },
             body: body === undefined ? undefined : JSON.stringify(body)
@@ -322,6 +338,80 @@ async function commitFiles(settings, files, message) {
     return commit.sha;
 }
 
+function markdownDocument(metadata, orderedFields, body) {
+    var frontmatter = orderedFields
+        .filter(function (name) { return metadata[name]; })
+        .map(function (name) { return name + ": " + metadata[name]; })
+        .join("\n");
+    return "---\n" + frontmatter + "\n---\n" + (body ? body + "\n" : "");
+}
+
+async function submitCollection(form, settings, common) {
+    if (!Object.prototype.hasOwnProperty.call(CATEGORY_FIELDS, common.category)) {
+        throw new RequestError("Unknown collection category.");
+    }
+
+    var metadata = { title: common.title };
+    CATEGORY_FIELDS[common.category].forEach(function (name) {
+        var value = textField(form, name, false);
+        if (value) metadata[name] = value;
+    });
+    metadata.date = common.date;
+    validateMetadata(metadata);
+
+    var cover = form.get("cover");
+    var coverBytes = null;
+    if (cover && typeof cover === "object" && typeof cover.arrayBuffer === "function" && cover.size) {
+        if (cover.size > 8 * 1024 * 1024) throw new RequestError("cover is larger than 8 MB.", 413);
+        coverBytes = new Uint8Array(await cover.arrayBuffer());
+        metadata.cover = common.slug + "." + detectImage(coverBytes);
+    }
+
+    var blurb = markdownField(form, "blurb", false, 20000);
+    var markdown = markdownDocument(
+        metadata,
+        ["title"].concat(CATEGORY_FIELDS[common.category], ["date", "cover"]),
+        blurb
+    );
+    var markdownPath = "content/collections/" + common.category + "/" + common.slug + ".md";
+    if (await githubPathExists(settings, markdownPath)) {
+        throw new RequestError("An entry with that slug already exists.", 409);
+    }
+
+    var files = [{ path: markdownPath, content: markdown, encoding: "utf-8" }];
+    if (coverBytes) {
+        var coverPath = "static/covers/" + common.category + "/" + metadata.cover;
+        if (await githubPathExists(settings, coverPath)) {
+            throw new RequestError("A cover with that filename already exists.", 409);
+        }
+        files.push({ path: coverPath, content: bytesToBase64(coverBytes), encoding: "base64" });
+    }
+
+    return commitFiles(settings, files, "Add " + common.title + " to " + common.category);
+}
+
+async function submitWriting(form, settings, common) {
+    if (WRITING_CATEGORIES.indexOf(common.category) === -1) {
+        throw new RequestError("Unknown writing category.");
+    }
+
+    var metadata = { title: common.title, date: common.date };
+    var description = textField(form, "description", false);
+    if (description) metadata.description = description;
+    var body = markdownField(form, "body", true, 200000);
+    var markdown = markdownDocument(metadata, ["title", "date", "description"], body);
+    var markdownPath = "content/writing/" + common.category + "/" + common.slug + ".md";
+    if (await githubPathExists(settings, markdownPath)) {
+        throw new RequestError("A piece with that slug already exists.", 409);
+    }
+
+    return commitFiles(
+        settings,
+        [{ path: markdownPath, content: markdown, encoding: "utf-8" }],
+        "Add " + common.title + " to " + common.category
+    );
+}
+
 async function handleSubmission(request, env) {
     await authenticate(request, env);
 
@@ -342,64 +432,23 @@ async function handleSubmission(request, env) {
         throw new RequestError("The submitted form could not be read.");
     }
 
-    var category = textField(form, "category", true);
-    if (!Object.prototype.hasOwnProperty.call(CATEGORY_FIELDS, category)) {
-        throw new RequestError("Unknown collection category.");
+    var entryType = textField(form, "entry_type", true);
+    if (entryType !== "collection" && entryType !== "writing") {
+        throw new RequestError("Unknown entry type.");
     }
+    var category = textField(form, "category", true);
     var title = textField(form, "title", true);
     var slug = textField(form, "slug", true);
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
         throw new RequestError("slug must contain lowercase letters, numbers, and hyphens only.");
     }
-    var experienced = textField(form, "date", true);
-    validateDate(experienced);
-
-    var metadata = { title: title };
-    CATEGORY_FIELDS[category].forEach(function (name) {
-        var value = textField(form, name, false);
-        if (value) metadata[name] = value;
-    });
-    metadata.date = experienced;
-    validateMetadata(metadata);
-
-    var cover = form.get("cover");
-    var coverBytes = null;
-    var coverExtension = "";
-    if (cover && typeof cover === "object" && typeof cover.arrayBuffer === "function" && cover.size) {
-        if (cover.size > 8 * 1024 * 1024) throw new RequestError("cover is larger than 8 MB.", 413);
-        coverBytes = new Uint8Array(await cover.arrayBuffer());
-        coverExtension = detectImage(coverBytes);
-        metadata.cover = slug + "." + coverExtension;
-    }
-
-    var blurbValue = form.get("blurb");
-    var blurb = typeof blurbValue === "string" ? blurbValue.trim() : "";
-    if (blurb.length > 20000) throw new RequestError("blurb is too long.");
-    if (blurb.indexOf("\u0000") !== -1) throw new RequestError("blurb contains an invalid character.");
-
-    var orderedFields = ["title"].concat(CATEGORY_FIELDS[category], ["date", "cover"]);
-    var frontmatter = orderedFields
-        .filter(function (name) { return metadata[name]; })
-        .map(function (name) { return name + ": " + metadata[name]; })
-        .join("\n");
-    var markdown = "---\n" + frontmatter + "\n---\n" + (blurb ? blurb + "\n" : "");
-
+    var entryDate = textField(form, "date", true);
+    validateDate(entryDate);
     var settings = repoSettings(env);
-    var markdownPath = "content/collections/" + category + "/" + slug + ".md";
-    if (await githubPathExists(settings, markdownPath)) {
-        throw new RequestError("An entry with that slug already exists.", 409);
-    }
-
-    var files = [{ path: markdownPath, content: markdown, encoding: "utf-8" }];
-    if (coverBytes) {
-        var coverPath = "static/covers/" + category + "/" + metadata.cover;
-        if (await githubPathExists(settings, coverPath)) {
-            throw new RequestError("A cover with that filename already exists.", 409);
-        }
-        files.push({ path: coverPath, content: bytesToBase64(coverBytes), encoding: "base64" });
-    }
-
-    var sha = await commitFiles(settings, files, "Add " + title + " to " + category);
+    var common = { category: category, title: title, slug: slug, date: entryDate };
+    var sha = entryType === "collection"
+        ? await submitCollection(form, settings, common)
+        : await submitWriting(form, settings, common);
     return {
         commit: sha,
         commit_url: "https://github.com/" + settings.owner + "/" + settings.repo + "/commit/" + sha
@@ -429,7 +478,7 @@ export async function onRequest(context) {
                 : "GitHub could not accept the entry. Please try again.";
             return jsonResponse({ error: message }, status);
         }
-        console.error("Unexpected collection submission error", error);
+        console.error("Unexpected admin submission error", error);
         return jsonResponse({ error: "Unexpected submission error." }, 500);
     }
 }

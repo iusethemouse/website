@@ -1,7 +1,7 @@
 (function () {
     "use strict";
 
-    var schemas = {
+    var collectionSchemas = {
         books: [
             { name: "author", label: "author", type: "text", max: 200 },
             { name: "series", label: "series", type: "text", max: 200 },
@@ -24,10 +24,18 @@
             { name: "genre", label: "genre", type: "text", max: 100 }
         ]
     };
+    var categories = {
+        collection: Object.keys(collectionSchemas),
+        writing: ["technical", "non-fiction", "fiction"]
+    };
 
-    var form = document.getElementById("collection-form");
+    var form = document.getElementById("admin-form");
+    var entryType = document.getElementById("entry-type");
     var category = document.getElementById("category");
     var fields = document.getElementById("category-fields");
+    var collectionFields = document.getElementById("collection-fields");
+    var writingFields = document.getElementById("writing-fields");
+    var dateLabel = document.getElementById("date-label");
     var title = document.getElementById("title");
     var slug = document.getElementById("slug");
     var cover = document.getElementById("cover");
@@ -48,9 +56,20 @@
             .replace(/-+$/g, "");
     }
 
+    function setGroupEnabled(group, enabled) {
+        group.hidden = !enabled;
+        group.querySelectorAll("input, select, textarea").forEach(function (control) {
+            control.disabled = !enabled;
+        });
+    }
+
     function renderCategoryFields() {
         fields.replaceChildren();
-        schemas[category.value].forEach(function (definition) {
+        var isCollection = entryType.value === "collection";
+        fields.hidden = !isCollection;
+        if (!isCollection) return;
+
+        collectionSchemas[category.value].forEach(function (definition) {
             var label = document.createElement("label");
             label.append(document.createTextNode(definition.label + " "));
 
@@ -72,7 +91,36 @@
             label.append(input);
             fields.append(label);
         });
-        history.replaceState(null, "", "?category=" + encodeURIComponent(category.value));
+    }
+
+    function updateAddress() {
+        var query = new URLSearchParams({
+            type: entryType.value,
+            category: category.value
+        });
+        history.replaceState(null, "", "?" + query.toString());
+    }
+
+    function renderType(preferredCategory) {
+        var type = entryType.value;
+        category.replaceChildren();
+        categories[type].forEach(function (name) {
+            var option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            category.append(option);
+        });
+        if (categories[type].indexOf(preferredCategory) !== -1) {
+            category.value = preferredCategory;
+        }
+
+        var isCollection = type === "collection";
+        setGroupEnabled(collectionFields, isCollection);
+        setGroupEnabled(writingFields, !isCollection);
+        dateLabel.textContent = isCollection ? "date experienced" : "date written";
+        submit.textContent = isCollection ? "commit entry" : "commit piece";
+        renderCategoryFields();
+        updateAddress();
     }
 
     function showStatus(message, kind, link) {
@@ -89,7 +137,13 @@
         }
     }
 
-    category.addEventListener("change", renderCategoryFields);
+    entryType.addEventListener("change", function () {
+        renderType("");
+    });
+    category.addEventListener("change", function () {
+        renderCategoryFields();
+        updateAddress();
+    });
     title.addEventListener("input", function () {
         if (!slugWasEdited) slug.value = slugify(title.value);
     });
@@ -129,13 +183,16 @@
             });
             if (!response.ok) throw new Error(result.error || "Submission failed.");
 
-            showStatus("Entry committed. Cloudflare is building it now.", "success", result.commit_url);
+            showStatus("Committed. Cloudflare is building it now.", "success", result.commit_url);
+            var selectedType = entryType.value;
             var selectedCategory = category.value;
             form.reset();
-            category.value = selectedCategory;
+            entryType.value = selectedType;
             slugWasEdited = false;
-            renderCategoryFields();
+            renderType(selectedCategory);
             preview.hidden = true;
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+            previewUrl = "";
         } catch (error) {
             showStatus(error.message || "Submission failed.", "error");
         } finally {
@@ -143,7 +200,11 @@
         }
     });
 
-    var requestedCategory = new URLSearchParams(location.search).get("category");
-    if (requestedCategory && schemas[requestedCategory]) category.value = requestedCategory;
-    renderCategoryFields();
+    var query = new URLSearchParams(location.search);
+    var requestedType = query.get("type");
+    var requestedCategory = query.get("category") || "";
+    if (Object.prototype.hasOwnProperty.call(categories, requestedType)) {
+        entryType.value = requestedType;
+    }
+    renderType(requestedCategory);
 })();
