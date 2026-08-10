@@ -5,6 +5,8 @@ Static website where I can put my writing and keep track of things I read, watch
 This website has a super simple pipeline:
 write in Markdown -> push to repo -> cloudflare runs `python build.py` which converts .md files to HTML -> we're live
 
+[humanoid-factoid.com](https://humanoid-factoid.com)
+
 ### Attributions
 
 `build.py` and `/static/style.css` were written by Claude based on my instructions.
