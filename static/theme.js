@@ -2,26 +2,29 @@
     "use strict";
 
     var allowedThemes = ["", "theme-beige", "theme-dark"];
+    var defaultTheme = "theme-beige";
     var root = document.documentElement;
-    var storedTheme = "";
+    var storedTheme = null;
 
     try {
-        storedTheme = localStorage.getItem("theme") || "";
+        storedTheme = localStorage.getItem("theme");
     } catch (_) {
-        storedTheme = "";
+        storedTheme = null;
     }
 
-    if (allowedThemes.indexOf(storedTheme) !== -1 && storedTheme) {
-        root.classList.add(storedTheme);
-    }
+    var initialTheme = allowedThemes.indexOf(storedTheme) !== -1
+        ? storedTheme
+        : defaultTheme;
+
+    root.classList.remove("theme-beige", "theme-dark");
+    if (initialTheme) root.classList.add(initialTheme);
 
     function applyTheme(theme) {
         root.classList.remove("theme-beige", "theme-dark");
         if (theme) root.classList.add(theme);
 
         try {
-            if (theme) localStorage.setItem("theme", theme);
-            else localStorage.removeItem("theme");
+            localStorage.setItem("theme", theme);
         } catch (_) {
             // The theme still works for this page when storage is unavailable.
         }
@@ -37,7 +40,7 @@
                 applyTheme(button.dataset.theme || "");
             });
         });
-        applyTheme(allowedThemes.indexOf(storedTheme) !== -1 ? storedTheme : "");
+        applyTheme(initialTheme);
     }
 
     if (document.readyState === "loading") {

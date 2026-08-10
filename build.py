@@ -14,6 +14,7 @@ import xml.etree.ElementTree as etree
 from datetime import date
 from html import escape
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import markdown
 from markdown.blockprocessors import BlockProcessor
@@ -291,12 +292,29 @@ def base_page(
         ("home", f"{prefix}index.html"),
         ("writing", f"{prefix}writing/index.html"),
         ("collections", f"{prefix}collections/index.html"),
+        ("apps", f"{prefix}apps/index.html"),
         ("about", f"{prefix}about/index.html"),
     ]
     nav_links = []
     for label, href in nav_items:
-        attrs = ' class="active" aria-current="page"' if label == active else ""
-        nav_links.append(f'<a href="{href}"{attrs}>{label}</a>')
+        classes = []
+        if label == "apps":
+            classes.append("nav-apps")
+        if label == active:
+            classes.append("active")
+        class_attr = f' class="{" ".join(classes)}"' if classes else ""
+        current_attr = ' aria-current="page"' if label == active else ""
+        if label == "apps":
+            label_html = "".join(
+                f'<span aria-hidden="true">{letter}</span>' for letter in label
+            )
+            aria_label = ' aria-label="apps"'
+        else:
+            label_html = escape(label)
+            aria_label = ""
+        nav_links.append(
+            f'<a href="{href}"{class_attr}{current_attr}{aria_label}>{label_html}</a>'
+        )
     nav_html = " / ".join(nav_links)
     desc_tag = (
         f'\n<meta name="description" content="{escape(description, quote=True)}">'
@@ -316,7 +334,7 @@ def base_page(
     safe_title = escape(title)
 
     return f"""<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="theme-beige">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -335,9 +353,9 @@ def base_page(
 <footer>
 <span>{date.today().year} &copy; Ivan Prigarin</span>
 <span class="theme-switcher">
-<button class="theme-btn" type="button" data-theme="" aria-label="Use white theme"></button>
-<button class="theme-btn" type="button" data-theme="theme-beige" aria-label="Use beige theme"></button>
-<button class="theme-btn" type="button" data-theme="theme-dark" aria-label="Use dark theme"></button>
+<button class="theme-btn" type="button" data-theme="" aria-label="Use white theme" aria-pressed="false"></button>
+<button class="theme-btn" type="button" data-theme="theme-beige" aria-label="Use beige theme" aria-pressed="true"></button>
+<button class="theme-btn" type="button" data-theme="theme-dark" aria-label="Use dark theme" aria-pressed="false"></button>
 </span>
 </footer>
 </body>
@@ -489,6 +507,60 @@ def build_collections(cover_manifest):
     # Individual category pages
     for cat in COLLECTION_CATEGORIES:
         build_collection_category(cat, cover_manifest)
+
+
+def build_apps():
+    app_dir = CONTENT / "apps"
+    entries = []
+    if app_dir.exists():
+        for path in sorted(app_dir.glob("*.md")):
+            validate_slug(path.stem, path)
+            meta, md_body = parse_frontmatter(path.read_text(encoding="utf-8"), path)
+            validate_meta(
+                meta,
+                source=path,
+                allowed=("title", "url"),
+                required=("title", "url"),
+            )
+            url = urlsplit(meta["url"])
+            if (
+                url.scheme != "https"
+                or not url.netloc
+                or url.username
+                or url.password
+            ):
+                raise BuildError(f"{path}: url must be a public HTTPS URL")
+            entries.append((meta, render_md(md_body)))
+
+    body_html = '<section class="apps-list" aria-label="apps">'
+    if entries:
+        for meta, blurb in entries:
+            title = escape(meta["title"])
+            url = escape(meta["url"], quote=True)
+            body_html += (
+                '<div class="collection-item">'
+                '<div class="item-text">'
+                f'<h2><a href="{url}">{title}</a></h2>'
+                f'<div class="item-blurb">{blurb}</div>'
+                "</div>"
+                "</div>"
+            )
+    else:
+        body_html += "<p>Nothing here yet.</p>"
+    body_html += "</section>"
+
+    dest = OUTPUT / "apps"
+    dest.mkdir(parents=True, exist_ok=True)
+    write_page(
+        dest / "index.html",
+        base_page(
+            "apps",
+            body_html,
+            active="apps",
+            depth=1,
+            description="Small, mindful apps from humanoid-factoid.",
+        ),
+    )
 
 
 def build_subtitle(category, meta):
@@ -791,6 +863,7 @@ def build():
     build_about(image_manifest)
     build_writing(image_manifest)
     build_collections(cover_manifest)
+    build_apps()
     build_admin()
 
     build_sitemap()

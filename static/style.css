@@ -47,6 +47,18 @@ nav a {
     text-decoration: none;
 }
 
+.nav-apps {
+    --apps-red: #b6404a;
+    --apps-gold: #9a6500;
+    --apps-green: #28734a;
+    --apps-blue: #365eb8;
+}
+
+.nav-apps span:nth-child(1) { color: var(--apps-red); }
+.nav-apps span:nth-child(2) { color: var(--apps-gold); }
+.nav-apps span:nth-child(3) { color: var(--apps-green); }
+.nav-apps span:nth-child(4) { color: var(--apps-blue); }
+
 nav a:hover,
 nav a.active {
     text-decoration: underline;
@@ -255,6 +267,26 @@ html.theme-dark .callout-tip    { background: rgba(152, 182, 177, 0.08); }
     margin-bottom: 0.75rem;
 }
 
+.apps-list .collection-item {
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.25rem;
+}
+
+.apps-list .collection-item:last-child {
+    border-bottom: 1px solid #ddd;
+}
+
+.apps-list .item-blurb {
+    max-width: 72ch;
+    color: #555;
+    font-size: 0.75rem;
+    line-height: 1.65;
+}
+
+.apps-list .item-blurb p:last-child {
+    margin-bottom: 0;
+}
+
 /* ---------------------------------------------------------------------------
    Footer
    --------------------------------------------------------------------------- */
@@ -362,6 +394,13 @@ html.theme-beige body {
     background: #f5f0e8;
 }
 
+html.theme-beige .nav-apps {
+    --apps-red: #a83d48;
+    --apps-gold: #8c5c00;
+    --apps-green: #256b45;
+    --apps-blue: #3559a7;
+}
+
 html.theme-dark body {
     background: #2a2a2a;
     color: #d0d0d0;
@@ -374,6 +413,13 @@ html.theme-dark header {
 html.theme-dark nav a,
 html.theme-dark main a {
     color: #d0d0d0;
+}
+
+html.theme-dark .nav-apps {
+    --apps-red: #f2777f;
+    --apps-gold: #d6a94d;
+    --apps-green: #72c894;
+    --apps-blue: #79a9e8;
 }
 
 html.theme-dark footer {
@@ -395,6 +441,14 @@ html.theme-dark .post-list li time,
 html.theme-dark figcaption,
 html.theme-dark footer {
     color: #999;
+}
+
+html.theme-dark .apps-list .item-blurb {
+    color: #aaa;
+}
+
+html.theme-dark .apps-list .collection-item:last-child {
+    border-bottom-color: #555;
 }
 
 html.theme-dark blockquote {
