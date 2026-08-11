@@ -282,6 +282,7 @@ def base_page(
     active="",
     depth=0,
     description="",
+    site_name="",
     robots="",
     scripts=(),
 ):
@@ -321,6 +322,20 @@ def base_page(
         if description
         else ""
     )
+    site_name_tags = ""
+    if site_name:
+        website_data = {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": site_name,
+            "alternateName": "humanoid-factoid.com",
+            "url": f"{SITE_URL}/",
+        }
+        site_name_tags = (
+            f'\n<meta property="og:site_name" content="{escape(site_name, quote=True)}">'
+            '\n<script type="application/ld+json">'
+            f"{json.dumps(website_data, separators=(',', ':'))}</script>"
+        )
     robots_tag = (
         f'\n<meta name="robots" content="{escape(robots, quote=True)}">'
         if robots
@@ -338,7 +353,7 @@ def base_page(
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{safe_title} — humanoid's internet page</title>{desc_tag}{robots_tag}
+<title>{safe_title} — humanoid's internet page</title>{desc_tag}{site_name_tags}{robots_tag}
 <link rel="stylesheet" href="{prefix}style.css?v={style_version}">
 <script src="{prefix}theme.js?v={theme_version}" defer></script>{extra_scripts}
 </head>
@@ -380,7 +395,20 @@ def build_home(image_manifest):
         f'width="{night["width"]}" height="{night["height"]}">'
         "</div>"
     )
-    write_page(OUTPUT / "index.html", base_page("home", body, active="home", depth=0))
+    write_page(
+        OUTPUT / "index.html",
+        base_page(
+            "home",
+            body,
+            active="home",
+            depth=0,
+            description=(
+                "A small digital garden full of facts and factoids about this, that, "
+                "and stuff in-between."
+            ),
+            site_name="humanoid factoid",
+        ),
+    )
 
 
 def build_about(image_manifest):
