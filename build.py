@@ -425,6 +425,14 @@ def build_about(image_manifest):
             required=("title",),
         )
         body = render_md(md_body)
+    body += (
+        '<div class="mark-widget" data-reaction-id="about">'
+        '<p class="mark-summary"><span class="reaction-count" aria-live="polite">'
+        "&hellip;</span> people left their mark here</p>"
+        '<button class="mark-action" type="button" disabled>leave yours</button>'
+        '<span class="reaction-status visually-hidden" aria-live="polite"></span>'
+        "</div>"
+    )
     day = image_manifest["humanoid-day.png"]
     night = image_manifest["humanoid-night.png"]
     body += (
@@ -438,7 +446,16 @@ def build_about(image_manifest):
     dest = OUTPUT / "about"
     dest.mkdir(parents=True, exist_ok=True)
     # depth=1: output/about/index.html
-    write_page(dest / "index.html", base_page("about", body, active="about", depth=1))
+    write_page(
+        dest / "index.html",
+        base_page(
+            "about",
+            body,
+            active="about",
+            depth=1,
+            scripts=("reactions.js",),
+        ),
+    )
 
 
 def build_writing(image_manifest):
@@ -505,13 +522,31 @@ def build_writing_category(category, image_manifest):
                 f'<p class="post-date"><time datetime="{safe_date}">'
                 f"{safe_date}</time></p>"
             )
-        post_html += f"{content}</article>"
+        reaction_id = f"writing--{category}--{slug}"
+        post_html += (
+            f"{content}"
+            f'<div class="post-reaction" data-reaction-id="{reaction_id}">'
+            '<button class="upvote-control" type="button" disabled '
+            'aria-label="Upvote this post">'
+            '<span class="upvote-caret" aria-hidden="true">^</span>'
+            '<span class="reaction-count" aria-live="polite">&hellip;</span>'
+            "</button>"
+            '<span class="reaction-status visually-hidden" aria-live="polite"></span>'
+            "</div></article>"
+        )
         post_dest = dest / slug
         post_dest.mkdir(parents=True, exist_ok=True)
         # depth=3: output/writing/{category}/{slug}/index.html
         write_page(
             post_dest / "index.html",
-            base_page(title, post_html, active="writing", depth=3, description=desc),
+            base_page(
+                title,
+                post_html,
+                active="writing",
+                depth=3,
+                description=desc,
+                scripts=("reactions.js",),
+            ),
         )
 
 
@@ -817,7 +852,11 @@ def build_cloudflare_files():
   Content-Security-Policy: default-src 'self'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
 """
     (OUTPUT / "_headers").write_text(headers, encoding="utf-8")
-    routes = {"version": 1, "include": ["/admin/submit"], "exclude": []}
+    routes = {
+        "version": 1,
+        "include": ["/admin/submit", "/api/reactions/*"],
+        "exclude": [],
+    }
     (OUTPUT / "_routes.json").write_text(
         json.dumps(routes, indent=2) + "\n", encoding="utf-8"
     )
@@ -825,7 +864,7 @@ def build_cloudflare_files():
 
 def copy_static():
     """Copy static files and create web-ready image derivatives."""
-    for filename in ("style.css", "theme.js", "admin.js"):
+    for filename in ("style.css", "theme.js", "admin.js", "reactions.js"):
         source = STATIC / filename
         if not source.exists():
             raise BuildError(f"missing required static asset: {source}")
