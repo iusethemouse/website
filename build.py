@@ -164,8 +164,9 @@ class CalloutProcessor(BlockProcessor):
         callout = etree.SubElement(
             parent, "blockquote", {"class": f"callout callout-{kind}"}
         )
-        label = etree.SubElement(callout, "strong")
-        label.text = kind
+        if kind != "note":
+            label = etree.SubElement(callout, "strong")
+            label.text = kind
         content = "\n".join(lines).strip()
         if content:
             self.parser.parseBlocks(callout, [content])
@@ -524,7 +525,7 @@ def build_writing_category(category, image_manifest):
             )
         reaction_id = f"writing--{category}--{slug}"
         post_html += (
-            f"{content}"
+            f'<div class="post-body">{content}</div>'
             f'<div class="post-reaction" data-reaction-id="{reaction_id}">'
             '<button class="upvote-control" type="button" disabled '
             'aria-label="Upvote this post">'
