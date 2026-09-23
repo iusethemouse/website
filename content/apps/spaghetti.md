@@ -1,6 +1,6 @@
 ---
 title: spaghetti
-url: https://spaghetti.humanoid-factoid.com
+url: https://github.com/iusethemouse/spaghetti
 ---
 I needed a way to visualise a family of interconnected pull requests for a whole bunch of repositories, with a clear hierarchy of what needs to be merged when, what is on top of what, and so on.
 
