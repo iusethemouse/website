@@ -468,6 +468,18 @@ def build_writing(image_manifest):
         links.append(f'<li><a href="{cat}/index.html">{cat}</a> ({count})</li>')
     links_html = "".join(links)
     body = f'<ul class="category-list">{links_html}</ul>'
+    day = image_manifest["frick-day.png"]
+    night = image_manifest["frick-night.png"]
+    body += (
+        '<div class="hero-drawing">'
+        f'<img class="hero-day" src="../images/{day["filename"]}" '
+        'alt="Frick, a hand-drawn character" '
+        f'width="{day["width"]}" height="{day["height"]}">'
+        f'<img class="hero-night" src="../images/{night["filename"]}" '
+        'alt="Frick, a hand-drawn character" '
+        f'width="{night["width"]}" height="{night["height"]}">'
+        "</div>"
+    )
     dest = OUTPUT / "writing"
     dest.mkdir(parents=True, exist_ok=True)
     # depth=1: output/writing/index.html
